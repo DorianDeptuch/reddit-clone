@@ -1,43 +1,62 @@
 import React, { useState, useRef, useContext } from "react";
-import { userContext } from "../context/UserContext";
+// import { userContext } from "../context/UserContext";
+import { AuthContext } from "../context/AuthContext";
 import Post from "./Post";
 
-function NewPost({ setShowNewPostPopup, setPostArray }) {
-  const [showActiveTab, setShowActiveTab] = useState(true);
+function NewPost({
+  setShowNewPostPopup,
+  setPostArray,
+  posts,
+  title,
+  author,
+  imgSrc,
+  urlSrc,
+  textContent,
+  setPosts,
+  setTitle,
+  setAuthor,
+  setImgSrc,
+  setUrlSrc,
+  setTextContent,
+  showActiveTab,
+  setShowActiveTab,
+  setShowSignup,
+}) {
   const [displayPreviewImg, setDisplayPreviewImg] = useState(false);
   const [currentFile, setCurrentFile] = useState(null); //might need to be lifted up a level
   const [currentFilePath, setCurrentFilePath] = useState(""); //might need to be lifted up a level
-  const [title, setTitle] = useState(""); //might need to be lifted up a level
+  // const [title, setTitle] = useState(""); //might need to be lifted up a level
   const [url, setUrl] = useState(""); //might need to be lifted up a level
+  const [urlThumbnail, setUrlThumbnail] = useState("");
+  const [titleAnchorURL, setTitleAnchorURL] = useState("");
   const [titleLength, setTitleLength] = useState(0);
-  const [placeHolderArray, setPlaceHolderArray] = useState([]);
-  const { user } = useContext(userContext);
+  const [placeHolderArray, setPlaceHolderArray] = useState([]); //do I really need this array? and the test array?
+  const [timeStamp, setTimeStamp] = useState(new Date().toLocaleTimeString());
+  const [dateStamp, setDateStamp] = useState(new Date().toLocaleDateString());
+  const { user } = useContext(AuthContext); //currentUser, setCurrentUser?
   const imgSrcRef = useRef();
   const titleRef = useRef();
-  // const authorRef = useRef();
   const urlSrcRef = useRef();
   const textContentRef = useRef();
 
-  // class Post {
-  //   constructor(title, author, imgSrc, urlSrc, textContent) {
-  //     this.title = title;
-  //     this.author = author;
-  //     this.imgSrc = imgSrc;
-  //     this.urlSrc = urlSrc;
-  //     this.textContent = textContent;
-  //   }
-  // }
+  // const [testlink, setTestlink] = useState(null);
 
   const handleActiveTab = () => {
     setShowActiveTab(!showActiveTab);
   };
 
   const handleFileUpload = (e) => {
-    const filePath = imgSrcRef.current.files[0].name;
-    setCurrentFile(URL.createObjectURL(e.target.files[0]));
-    setCurrentFilePath(filePath);
-    console.log(filePath);
-    setDisplayPreviewImg(true);
+    //files under 2MB accepted
+    if (e.target.files[0].size > 2097152) {
+      alert("File is too big!");
+      e.target.files = [];
+    } else {
+      const filePath = imgSrcRef.current.files[0].name;
+      setCurrentFile(URL.createObjectURL(e.target.files[0]));
+      setCurrentFilePath(filePath);
+      // console.log(filePath);
+      setDisplayPreviewImg(true);
+    }
   };
 
   const handleButtonClick = (e) => {
@@ -51,8 +70,17 @@ function NewPost({ setShowNewPostPopup, setPostArray }) {
     setDisplayPreviewImg(false);
   };
 
-  const handleUrlChange = (e) => {
-    setUrl(e.target.value);
+  const handleUrlChange = async (e) => {
+    setTitleAnchorURL(e.target.value);
+    const sliced = e.target.value.slice(-11);
+    const updatedURL = `https://www.youtube.com/embed/${sliced}`;
+    const thumbnail = `https://img.youtube.com/vi/${sliced}/0.jpg`;
+    setUrl(updatedURL);
+    setUrlThumbnail(thumbnail);
+    // const blob = await new Blob([url]);
+    // await console.log(blob);
+    // await setTestlink(URL.createObjectURL(blob));
+    // await console.log(testlink);
   };
 
   const handleTitleChange = (e) => {
@@ -60,41 +88,48 @@ function NewPost({ setShowNewPostPopup, setPostArray }) {
     setTitleLength(e.target.value.length);
   };
 
+  const handleTextContentChange = (e) => {
+    setTextContent(e.target.value);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    let title = titleRef.current.value;
-    let imgSrc = imgSrcRef.current ?? "";
-    let urlSrc = urlSrcRef.current ?? "";
-    let textContent = textContentRef.current ?? "";
+    let titleValue = titleRef.current.value;
+    let imgSrcValue = imgSrcRef.current ?? "";
+    let urlSrcValue = urlSrcRef.current ?? "";
+    let textContentValue = textContentRef.current ?? "";
+    setTitle(titleValue);
+    setImgSrc(imgSrcValue);
+    setUrlSrc(urlSrcValue);
+    setTextContent(textContentValue);
     setDisplayPreviewImg(false);
     setShowNewPostPopup(false);
-    setPlaceHolderArray((prev) => [title, user, imgSrc, urlSrc, textContent]);
+    setPlaceHolderArray((prev) => [
+      titleValue,
+      user,
+      imgSrcValue,
+      urlSrcValue,
+      textContentValue,
+    ]);
     const test = [];
-    test.push([title, user, imgSrc, urlSrc, textContent]);
-    // const newPost = new Post(
-    //   title,
-    //   user,
-    //   imgSrc.value,
-    //   urlSrc.value,
-    //   textContent.value
-    // );
-    const mapped = test.map(
-      (
-        item //item is never used???
-      ) => (
-        <Post
-          title={item[0]}
-          author={item[1]}
-          imgSrc={item[2]}
-          urlSrc={item[3]}
-          textContent={item[4]}
-        />
-      )
-    );
-    console.log("test: ", test);
-    console.log("placeholderarray: ", placeHolderArray);
+    test.push([titleValue, user, imgSrcValue, urlSrcValue, textContentValue]);
+
+    const mapped = test.map((item) => (
+      <Post
+        title={item[0]}
+        author={item[1]}
+        imgSrc={currentFile}
+        // urlSrc={testlink}
+        urlSrc={url}
+        textContent={textContent}
+        timeStamp={timeStamp}
+        dateStamp={dateStamp}
+        titleAnchorURL={titleAnchorURL}
+        urlSrcThumbnail={urlThumbnail}
+        setShowSignup={setShowSignup}
+      />
+    ));
     setPostArray((prev) => [mapped, ...prev]);
-    console.log(mapped);
   };
 
   return (
@@ -165,7 +200,7 @@ function NewPost({ setShowNewPostPopup, setPostArray }) {
         <form action="" className="newPost__form" onSubmit={handleSubmit}>
           {showActiveTab && !currentFile && (
             <div className="url__container">
-              <label htmlFor="url">url</label>
+              <label htmlFor="url">YouTube Video</label>
               <input
                 ref={urlSrcRef}
                 id="url"
@@ -230,7 +265,12 @@ function NewPost({ setShowNewPostPopup, setPostArray }) {
               <label htmlFor="text">
                 text <span>(optional)</span>
               </label>
-              <textarea ref={textContentRef} id="text" type="text" />
+              <textarea
+                ref={textContentRef}
+                id="text"
+                type="text"
+                onChange={handleTextContentChange}
+              />
             </div>
           )}
           <div className="subclonnit__container">

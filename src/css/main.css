@@ -453,6 +453,10 @@ button:hover {
   height: 100%;
 }
 
+.post .post-text__container a {
+  text-decoration-line: none;
+}
+
 .post .post-text__container .post-title {
   color: #369;
   padding: 0.25rem;
@@ -493,6 +497,16 @@ button:hover {
 .post .post-preview {
   width: 50%;
   height: auto;
+}
+
+.post .post-preview > * {
+  width: 100%;
+}
+
+.post .post-preview .text-preview {
+  border: 1px solid #369;
+  border-radius: 5px;
+  padding: 1rem 2rem;
 }
 
 .new-post__container {
@@ -569,7 +583,8 @@ button:hover {
   font-size: 0.75rem;
 }
 
-.new-post__container div form div input {
+.new-post__container div form div input,
+.new-post__container div form div textarea {
   padding: 0.25rem;
 }
 
@@ -580,6 +595,10 @@ button:hover {
   align-items: center;
   justify-content: center;
   padding: 1rem;
+}
+
+.new-post__container div form .image-video__container .drag-n-drop .dragging {
+  border: 2px dashed #369;
 }
 
 .new-post__container div form .image-video__container .drag-n-drop button {

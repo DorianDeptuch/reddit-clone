@@ -48,6 +48,10 @@
     width: 80%;
     height: 100%;
 
+    a {
+      text-decoration-line: none;
+    }
+
     .post-title {
       color: $blue-font;
       padding: 0.25rem;
@@ -92,5 +96,15 @@
   .post-preview {
     width: 50%;
     height: auto;
+
+    & > * {
+      width: 100%;
+    }
+
+    .text-preview {
+      border: 1px solid $blue-font;
+      border-radius: 5px;
+      padding: 1rem 2rem;
+    }
   }
 }

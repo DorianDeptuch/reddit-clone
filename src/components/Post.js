@@ -1,12 +1,26 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useContext } from "react";
+// import { userContext } from "../context/UserContext";
+import { AuthContext } from "../context/AuthContext";
 
-function Post({ img, title, author, subclonnit, comments }) {
+function Post({
+  title,
+  author,
+  imgSrc,
+  urlSrc,
+  textContent,
+  timeStamp,
+  dateStamp,
+  titleAnchorURL,
+  urlSrcThumbnail,
+  setShowSignup,
+}) {
   const [showPreview, setShowPreview] = useState(false);
   const [upvoted, setUpvoted] = useState(false);
   const [downvoted, setDownvoted] = useState(false);
   const [karma, setKarma] = useState(1);
   const upvoteRef = useRef();
   const downvoteRef = useRef();
+  const { user, setUser } = useContext(AuthContext); //currentUser, setCurrentUser?
 
   const handleUpvote = () => {
     if (downvoted && !upvoted) {
@@ -40,13 +54,14 @@ function Post({ img, title, author, subclonnit, comments }) {
   const handleShowPostPreview = () => {
     setShowPreview(!showPreview);
   };
+
   return (
     <div className="post">
       <div className="post-karma__container">
         <div className="upvote">
           <i
             ref={upvoteRef}
-            onClick={handleUpvote}
+            onClick={user ? handleUpvote : () => setShowSignup(true)}
             className="fas fa-arrow-up"
             style={upvoted ? { color: "#ff4500" } : { color: "#cbccc4" }}
           ></i>
@@ -55,21 +70,25 @@ function Post({ img, title, author, subclonnit, comments }) {
         <div className="downvote">
           <i
             ref={downvoteRef}
-            onClick={handleDownvote}
+            onClick={user ? handleDownvote : () => setShowSignup(true)}
             className="fas fa-arrow-down"
             style={downvoted ? { color: "#369" } : { color: "#cbccc4" }}
           ></i>
         </div>
       </div>
       <div className="post-image__container">
-        {img ? (
-          <img src={img} alt={title}></img>
+        {imgSrc ? (
+          <img src={imgSrc} alt={title}></img>
+        ) : urlSrc ? (
+          <img src={urlSrcThumbnail} alt="thumbnail"></img>
         ) : (
           <i className="fas fa-comment-dots fa-4x"></i>
         )}
       </div>
       <div className="post-text__container">
-        <h3 className="post-title">{title}</h3>
+        <a href={titleAnchorURL}>
+          <h3 className="post-title">{title}</h3>
+        </a>
         <div className="post-preview-info__container">
           <div onClick={handleShowPostPreview} className="post-preview-btn">
             {!showPreview ? (
@@ -80,7 +99,8 @@ function Post({ img, title, author, subclonnit, comments }) {
           </div>
           <div className="post-info">
             <p className="author-info">
-              submitted by {author} to {subclonnit}
+              submitted by {author} to c/all{/*subclonnit*/} at {timeStamp} on{" "}
+              {dateStamp}
             </p>
             <ul className="list-buttons">
               <li>comments</li>
@@ -93,22 +113,27 @@ function Post({ img, title, author, subclonnit, comments }) {
       </div>
       {showPreview ? (
         <div className="post-preview">
-          {img && <img src={img} alt="preview popup" className="preview-img" />}
-          {/* text && <p>Lorem ipsum dolor sit amet.</p> */}
-          {/* linkURL && <iframe width="560" 
-                              height="315" 
-                              src={linkURL} 
-                              title="YouTube video player" 
-                              frameborder="0" 
-                              allow="accelerometer; 
-                                autoplay; 
-                                clipboard-write; 
-                                encrypted-media; 
-                                gyroscope;
-                                picture-in-picture" 
-                              allowfullscreen></iframe> */}
+          {imgSrc && (
+            <img src={imgSrc} alt="preview popup" className="preview-img" />
+          )}
+          {textContent && <div className="text-preview">{textContent}</div>}
+          {urlSrc && (
+            <iframe
+              width="560"
+              height="315"
+              src={urlSrc}
+              title="YouTube video player"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+            ></iframe>
+          )}
+          {/* <video>
+              <source src={urlSrc}></source>
+            </video> */}
         </div>
       ) : null}
+      {/* div for comments, sharing??, saving, hiding */}
     </div>
   );
 }

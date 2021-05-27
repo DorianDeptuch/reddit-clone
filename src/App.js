@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext } from "react";
+import React, { useState, useEffect } from "react";
 import "./css/main.css";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
@@ -7,7 +7,8 @@ import SignupForm from "./components/SignupForm";
 import LoginForm from "./components/LoginForm";
 import Post from "./components/Post";
 import NewPostPopup from "./components/NewPostPopup";
-import { userContext } from "./context/UserContext";
+// import { userContext } from "./context/UserContext";
+import { AuthProvider } from "./context/AuthContext";
 
 // export const userContext = createContext(null);
 
@@ -18,55 +19,26 @@ function App() {
   const [showNewPostPopup, setShowNewPostPopup] = useState(false);
   const [postArray, setPostArray] = useState([]);
   const [posts, setPosts] = useState([]);
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
+  const [imgSrc, setImgSrc] = useState("");
+  const [urlSrc, setUrlSrc] = useState("");
+  const [textContent, setTextContent] = useState("");
+  const [showActiveTab, setShowActiveTab] = useState(true);
   const handleShowNewPostPopup = () => {
     setShowNewPostPopup(!showNewPostPopup);
   };
-  // const handleUpdatePosts = (title, author, imgSrc, urlSrc, textContent) => {
-  //   return postArray.map((item) => (
-  //     <Post
-  //       title={title}
-  //       author={author}
-  //       imgSrc={imgSrc}
-  //       urlSrc={urlSrc}
-  //       textContent={textContent}
-  //     />
-  //   ));
-  // };
 
-  useEffect(() => {
-    if (postArray.length > 0) {
-      // handleUpdatePosts(
-      //   postArray[0].title,
-      //   postArray[0].author,
-      //   postArray[0].imgSrc,
-      //   postArray[0].urlSrc,
-      //   postArray[0].textContent
-      // );
-      console.log("post Array is: ", postArray);
-      // const mapped = postArray.map(
-      //   (
-      //     item //item is never used???
-      //   ) => (
-      //     <Post
-      //       title={postArray[0].title}
-      //       author={postArray[0].author}
-      //       imgSrc={postArray[0].imgSrc}
-      //       urlSrc={postArray[0].urlSrc}
-      //       textContent={postArray[0].textContent}
-      //     />
-      //   )
-      // );
-      // setPosts((prev) => [mapped, ...prev]);
-    }
-    console.log("re-rendering");
-  }, [postArray]);
   return (
-    <userContext.Provider value={{ user, setUser }}>
+    // <userContext.Provider value={{ user, setUser }}>
+    <AuthProvider>
       <div>
         <Header />
         <Sidebar
           setShowSignup={setShowSignup}
           handleShowNewPostPopup={handleShowNewPostPopup}
+          showActiveTab={showActiveTab}
+          setShowActiveTab={setShowActiveTab}
         />
         <MainPage />
         <Post
@@ -118,10 +90,27 @@ function App() {
           <NewPostPopup
             setPostArray={setPostArray}
             setShowNewPostPopup={setShowNewPostPopup}
+            posts={posts}
+            title={title}
+            author={author}
+            imgSrc={imgSrc}
+            urlSrc={urlSrc}
+            textContent={textContent}
+            setPosts={setPosts}
+            setTitle={setTitle}
+            setAuthor={setAuthor}
+            setImgSrc={setImgSrc}
+            setUrlSrc={setUrlSrc}
+            setTextContent={setTextContent}
+            showActiveTab={showActiveTab}
+            setShowActiveTab={setShowActiveTab}
+            setShowSignup={setShowSignup}
           />
         )}
       </div>
-    </userContext.Provider>
+    </AuthProvider>
+
+    // </userContext.Provider>
   );
 }
 

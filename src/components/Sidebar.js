@@ -1,8 +1,14 @@
 import React, { useContext } from "react";
-import { userContext } from "../context/UserContext";
+// import { userContext } from "../context/UserContext";
+import { AuthContext } from "../context/AuthContext";
 
-function Sidebar({ setShowSignup, handleShowNewPostPopup }) {
-  const { user, setUser } = useContext(userContext);
+function Sidebar({
+  setShowSignup,
+  handleShowNewPostPopup,
+  showActiveTab,
+  setShowActiveTab,
+}) {
+  const { user, setUser } = useContext(AuthContext); //currentUser, setCurrentUser?
 
   return (
     <div className="sidebar">
@@ -10,7 +16,14 @@ function Sidebar({ setShowSignup, handleShowNewPostPopup }) {
         <input type="text" className="searchbar" placeholder="search" />
         <div className="arrowBtn">
           {user ? (
-            <button onClick={handleShowNewPostPopup}>Submit a new link</button>
+            <button
+              onClick={() => {
+                setShowActiveTab(true);
+                handleShowNewPostPopup();
+              }}
+            >
+              Submit a new link
+            </button>
           ) : (
             <button onClick={() => setShowSignup(true)}>
               Submit a new link
@@ -19,14 +32,24 @@ function Sidebar({ setShowSignup, handleShowNewPostPopup }) {
         </div>
         <div className="arrowBtn">
           {user ? (
-            <button>Submit a new text post</button>
+            <button
+              onClick={() => {
+                setShowActiveTab(false);
+                handleShowNewPostPopup();
+              }}
+            >
+              Submit a new text post
+            </button>
           ) : (
             <button onClick={() => setShowSignup(true)}>
               Submit a new text post
             </button>
           )}
         </div>
-        <div className="clonnit-premium__container">
+        <div
+          className="clonnit-premium__container"
+          onClick={() => alert("coming soon")}
+        >
           <div>
             <h3>
               clonnit <span>premium</span>
@@ -40,7 +63,9 @@ function Sidebar({ setShowSignup, handleShowNewPostPopup }) {
         </div>
         <div className="arrowBtn">
           {user ? (
-            <button>Create your own subclonnit</button>
+            <button onClick={() => alert("coming soon")}>
+              Create your own subclonnit
+            </button>
           ) : (
             <button onClick={() => setShowSignup(true)}>
               Create your own subclonnit

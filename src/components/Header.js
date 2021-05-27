@@ -1,9 +1,9 @@
 import React, { useState, useContext } from "react";
-// import { userContext } from "../App";
-import { userContext } from "../context/UserContext";
+// import { userContext } from "../context/UserContext";
+import { AuthContext } from "../context/AuthContext";
 
 function Header() {
-  const { user, setUser } = useContext(userContext);
+  const { user, setUser } = useContext(AuthContext); //currentUser, setCurrentUser?
   return (
     <div className="header">
       <div className="console-account__container">
