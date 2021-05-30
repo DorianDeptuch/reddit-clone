@@ -1,6 +1,6 @@
 import React, { useState, useRef, useContext } from "react";
-// import { userContext } from "../context/UserContext";
-import { AuthContext } from "../context/AuthContext";
+import { userContext } from "../context/UserContext";
+// import { AuthContext } from "../context/AuthContext";
 
 function Post({
   title,
@@ -20,7 +20,8 @@ function Post({
   const [karma, setKarma] = useState(1);
   const upvoteRef = useRef();
   const downvoteRef = useRef();
-  const { user, setUser } = useContext(AuthContext); //currentUser, setCurrentUser?
+  // const { user, setUser } = useContext(AuthContext); //currentUser, setCurrentUser?
+  const { user, setUser } = useContext(userContext); //currentUser, setCurrentUser?
 
   const handleUpvote = () => {
     if (downvoted && !upvoted) {

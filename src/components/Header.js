@@ -1,9 +1,30 @@
 import React, { useState, useContext } from "react";
 // import { userContext } from "../context/UserContext";
-import { AuthContext } from "../context/AuthContext";
+// import { useAuth } from "../context/AuthContext";
+import { userContext } from "../context/UserContext";
+import { auth } from "../firebase";
 
-function Header() {
-  const { user, setUser } = useContext(AuthContext); //currentUser, setCurrentUser?
+function Header({ setShowSignup, setShowLogin, user, setUser }) {
+  // const { user, setUser } = useContext(AuthContext); //currentUser, setCurrentUser?
+  // const { user, setUser } = useContext(userContext); //currentUser, setCurrentUser?
+  // const { logout, currentUser } = useAuth();
+  // const [user, setUser] = useState(currentUser.email ?? "");
+  const [error, setError] = useState("");
+
+  async function handleLogout(e) {
+    e.preventDefault();
+
+    setError("");
+    try {
+      await auth.signOut();
+      setUser(null);
+    } catch (err) {
+      alert(err);
+    }
+  }
+
+  // const currentUser = useContext(AuthContext);
+  // const { currentUser } = useAuth();
   return (
     <div className="header">
       <div className="console-account__container">
@@ -21,19 +42,29 @@ function Header() {
               <p>(123)</p>
               <i className="fas fa-cog"></i>
               <p
-                onClick={() => {
-                  setUser(null);
-                }}
+                // onClick={() => {
+                //   setUser(null);
+                // }}
+                onClick={handleLogout}
               >
                 Logout
               </p>
             </div>
           ) : (
             <div className="logged-out__account">
-              <p>Sign In</p>
               <p
                 onClick={() => {
-                  setUser("dor");
+                  setShowSignup((prev) => !prev);
+                }}
+              >
+                Sign Up
+              </p>
+              <p
+                // onClick={() => {
+                //   setUser("dor");
+                // }}
+                onClick={() => {
+                  setShowLogin((prev) => !prev);
                 }}
               >
                 Log In

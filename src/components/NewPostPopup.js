@@ -1,7 +1,11 @@
 import React, { useState, useRef, useContext } from "react";
-// import { userContext } from "../context/UserContext";
-import { AuthContext } from "../context/AuthContext";
+import { userContext } from "../context/UserContext";
+// import { AuthContext } from "../context/AuthContext";
 import Post from "./Post";
+import { db } from "../firebase";
+import uniqid from "uniqid";
+// import useStorage from "../hooks/useStorage";
+import { storage } from "../firebase";
 
 function NewPost({
   setShowNewPostPopup,
@@ -24,6 +28,7 @@ function NewPost({
 }) {
   const [displayPreviewImg, setDisplayPreviewImg] = useState(false);
   const [currentFile, setCurrentFile] = useState(null); //might need to be lifted up a level
+  const [uploadedIMG, setUploadedIMG] = useState("");
   const [currentFilePath, setCurrentFilePath] = useState(""); //might need to be lifted up a level
   // const [title, setTitle] = useState(""); //might need to be lifted up a level
   const [url, setUrl] = useState(""); //might need to be lifted up a level
@@ -33,7 +38,9 @@ function NewPost({
   const [placeHolderArray, setPlaceHolderArray] = useState([]); //do I really need this array? and the test array?
   const [timeStamp, setTimeStamp] = useState(new Date().toLocaleTimeString());
   const [dateStamp, setDateStamp] = useState(new Date().toLocaleDateString());
-  const { user } = useContext(AuthContext); //currentUser, setCurrentUser?
+  // const { user } = useContext(AuthContext); //currentUser, setCurrentUser?
+  const [error, setError] = useState("");
+  const { user, setUser } = useContext(userContext); //currentUser, setCurrentUser?
   const imgSrcRef = useRef();
   const titleRef = useRef();
   const urlSrcRef = useRef();
@@ -111,15 +118,56 @@ function NewPost({
       urlSrcValue,
       textContentValue,
     ]);
+
     const test = [];
     test.push([titleValue, user, imgSrcValue, urlSrcValue, textContentValue]);
 
+    const storageRef = storage.ref();
+    const fileRef = storageRef.child(currentFile.name);
+    fileRef.put(currentFile).then((file) => {
+      console.log("file uploaded ", file.name);
+    });
+
+    // //upload img to storage and get back url to then upload to firestore
+    // // const { url } = useStorage(currentFile)
+    // const storageRef = storage.ref().child(currentFile.name);
+
+    // storageRef.put(currentFile).on(
+    //   "state_changed",
+    //   // (snap) => {
+    //   //   let percentage = (snap.bytesTransferred / snap.totalBytes) * 100;
+    //   //   setProgress(percentage);
+    //   // },
+    //   (err) => {
+    //     setError(err);
+    //   },
+    //   async () => {
+    //     const url = await storageRef.getDownloadURL();
+    //     setUploadedIMG(url);
+    //   }
+    // );
+
+    //upload the post data to firestore
+    handleFirestoreDataUpload(
+      titleValue,
+      user,
+      uploadedIMG,
+      url,
+      textContent,
+      timeStamp,
+      dateStamp,
+      titleAnchorURL,
+      urlThumbnail
+    );
+
+    //post the same data to the screen
     const mapped = test.map((item) => (
       <Post
+        key={uniqid()}
         title={item[0]}
         author={item[1]}
+        // imgSrc={uploadedIMG}
         imgSrc={currentFile}
-        // urlSrc={testlink}
         urlSrc={url}
         textContent={textContent}
         timeStamp={timeStamp}
@@ -132,6 +180,33 @@ function NewPost({
     setPostArray((prev) => [mapped, ...prev]);
   };
 
+  const handleFirestoreDataUpload = (
+    title,
+    author,
+    imgSrc,
+    urlSrc,
+    textContent,
+    timeStamp,
+    dateStamp,
+    titleAnchorUrl,
+    urlSrcThumbnail
+  ) => {
+    db.collection("posts")
+      .add({
+        title,
+        author,
+        imgSrc,
+        urlSrc,
+        textContent,
+        timeStamp,
+        dateStamp,
+        titleAnchorUrl,
+        urlSrcThumbnail,
+      })
+      .catch((error) => {
+        console.error("Error adding document: ", error);
+      });
+  };
   return (
     <div className="new-post__container">
       <h3>submit to clonnit</h3>
@@ -273,10 +348,10 @@ function NewPost({
               />
             </div>
           )}
-          <div className="subclonnit__container">
-            <label htmlFor="subclonnit">subclonnit</label>
+          {/* <div className="subclonnit__container">
+            <label htmlFor="subclonnit">subclonnit</label>    IMPLEMENT REACT ROUTER AND PAGES IN THE FUTURE
             <input id="subclonnit" type="text" />
-          </div>
+          </div> */}
           <div className="submit__container">
             <button>submit</button>
           </div>

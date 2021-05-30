@@ -1,10 +1,68 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
+import { auth } from "../firebase";
+// import { useAuth } from "../context/AuthContext";
 
-function SignupForm({ showSignup, showLogin, setShowSignup, setShowLogin }) {
+function SignupForm({
+  showSignup,
+  showLogin,
+  setShowSignup,
+  setShowLogin,
+  user,
+  setUser,
+}) {
   const [showNextpage, setShowNextpage] = useState(false);
-  const handleSubmit = (e) => {
+  const emailRef = useRef();
+  const usernameRef = useRef();
+  const passwordRef = useRef();
+  const passwordConfirmRef = useRef();
+  const formRef = useRef();
+  // const { signup, currentUser } = useAuth();
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e) {
     e.preventDefault();
-  };
+
+    if (passwordRef.current.value !== passwordConfirmRef.current.value) {
+      return setError("Passwords do not match");
+    }
+
+    const email = emailRef.current.value;
+    const password = passwordRef.current.value;
+    const username = usernameRef.current.value;
+
+    try {
+      setError("");
+      setLoading(true);
+      await auth
+        .createUserWithEmailAndPassword(email, password)
+        // .then((credentials) => {
+        //   console.log(credentials.user);
+        // })
+        // .then((res) => {
+        //   setUser(res.user.displayName);
+        // })
+        .then((res) => {
+          return auth.currentUser.updateProfile({
+            displayName: username,
+          });
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      console.log(auth.currentUser.displayName);
+      setUser(auth.currentUser.displayName);
+      // auth.currentUser.updateProfile({
+      //   displayName: username.value,
+      // });
+      formRef.current.reset();
+      setShowSignup(false);
+    } catch {
+      setError("Failed to create an account");
+    }
+    setLoading(false);
+  }
+
   const handleShowLoginForm = () => {
     setShowSignup(false);
     setShowLogin(true);
@@ -20,6 +78,7 @@ function SignupForm({ showSignup, showLogin, setShowSignup, setShowLogin }) {
       >
         X
       </strong>
+
       <div>
         <h3>Sign up to get your own personalized Clonnit experience!</h3>
         <p>
@@ -29,9 +88,9 @@ function SignupForm({ showSignup, showLogin, setShowSignup, setShowLogin }) {
       </div>
       {!showNextpage ? (
         <div>
+          {/* {JSON.stringify(currentUser)} */}
+          {/* {currentUser.email} */}
           <form>
-            <label>Enter Email</label>
-            <input type="email" placeholder="Enter Email"></input>
             <button
               onClick={() => {
                 setShowNextpage(true);
@@ -46,13 +105,37 @@ function SignupForm({ showSignup, showLogin, setShowSignup, setShowLogin }) {
         </div>
       ) : (
         <div>
-          <form>
+          <h2 style={{ color: "red" }}>{error}</h2>
+          <form ref={formRef} onSubmit={handleSubmit}>
+            {/* <form> */}
+            <label>Enter Email</label>
+            <input
+              ref={emailRef}
+              type="email"
+              placeholder="Enter Email"
+              required
+            ></input>
             <label>Choose username</label>
-            <input type="text" placeholder="username"></input>
+            <input
+              ref={usernameRef}
+              type="text"
+              placeholder="username"
+              required
+            ></input>
             <label>set password</label>
-            <input type="password" placeholder="password"></input>
+            <input
+              ref={passwordRef}
+              type="password"
+              placeholder="password"
+              required
+            ></input>
             <label>confirm password</label>
-            <input type="password" placeholder="confirm password"></input>
+            <input
+              ref={passwordConfirmRef}
+              type="password"
+              placeholder="confirm password"
+              required
+            ></input>
             <div className="modal-button__container">
               <button
                 onClick={() => {
@@ -61,7 +144,9 @@ function SignupForm({ showSignup, showLogin, setShowSignup, setShowLogin }) {
               >
                 Back
               </button>
-              <button onClick={handleSubmit}>Submit</button>
+              <button type="submit" disabled={loading}>
+                Submit
+              </button>
             </div>
           </form>
         </div>

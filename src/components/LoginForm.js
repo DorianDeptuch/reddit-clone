@@ -1,10 +1,38 @@
-import React from "react";
+import React, { useState, useRef } from "react";
+// import { useAuth } from "../context/AuthContext";
+import { auth } from "../firebase";
 
-function LoginForm({ showSignup, showLogin, setShowSignup, setShowLogin }) {
+function LoginForm({ setShowSignup, setShowLogin, setUser }) {
+  const emailRef = useRef();
+  const passwordRef = useRef();
+  const formRef = useRef();
+  // const { login } = useAuth();
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    const email = emailRef.current.value;
+    const password = passwordRef.current.value;
+
+    try {
+      setError("");
+      setLoading(true);
+      await auth.signInWithEmailAndPassword(email, password);
+      setUser(auth.currentUser.displayName);
+      formRef.current.reset();
+      setShowLogin(false);
+    } catch {
+      setError("Failed to log in");
+    }
+    setLoading(false);
+  }
+
   const handleShowSignupForm = () => {
     setShowLogin(false);
     setShowSignup(true);
   };
+
   return (
     <div className="login-form__container">
       <strong
@@ -22,11 +50,19 @@ function LoginForm({ showSignup, showLogin, setShowSignup, setShowLogin }) {
         </p>
       </div>
       <div>
-        <form>
+        {/* <form> */}
+        <form ref={formRef} onSubmit={handleSubmit}>
           <label>Log In</label>
-          <input type="text" placeholder="username"></input>
-          <input type="password" placeholder="password"></input>
-          <button className="submit">Log In</button>
+          <h2 style={{ color: "red" }}>{error}</h2>
+          <input ref={emailRef} type="email" placeholder="email"></input>
+          <input
+            ref={passwordRef}
+            type="password"
+            placeholder="password"
+          ></input>
+          <button type="submit" className="submit">
+            Log In
+          </button>
         </form>
         <p>
           Don't have an account?{" "}

@@ -7,8 +7,10 @@ import SignupForm from "./components/SignupForm";
 import LoginForm from "./components/LoginForm";
 import Post from "./components/Post";
 import NewPostPopup from "./components/NewPostPopup";
-// import { userContext } from "./context/UserContext";
-import { AuthProvider } from "./context/AuthContext";
+import { userContext } from "./context/UserContext";
+import { auth, db } from "./firebase";
+import uniqid from "uniqid";
+// import { AuthProvider } from "./context/AuthContext";
 
 // export const userContext = createContext(null);
 
@@ -25,15 +27,76 @@ function App() {
   const [urlSrc, setUrlSrc] = useState("");
   const [textContent, setTextContent] = useState("");
   const [showActiveTab, setShowActiveTab] = useState(true);
+
+  useEffect(() => {
+    db.collection("posts")
+      .get()
+      .then((snapshot) => {
+        mapFirestoreData(snapshot.docs);
+        // setPostArray((prev) => [mapFirestoreData, ...prev]);
+      });
+
+    const mapFirestoreData = (data) => {
+      data.forEach((doc) => {
+        let {
+          title,
+          author,
+          imgSrc,
+          urlSrc,
+          textContent,
+          timeStamp,
+          dateStamp,
+          titleAnchorURL,
+          urlSrcThumbnail,
+        } = doc.data();
+
+        const mapped = (
+          <Post
+            key={uniqid()}
+            title={title}
+            author={author}
+            imgSrc={imgSrc}
+            urlSrc={urlSrc}
+            textContent={textContent}
+            timeStamp={timeStamp}
+            dateStamp={dateStamp}
+            titleAnchorURL={titleAnchorURL}
+            urlSrcThumbnail={urlSrcThumbnail}
+            setShowSignup={setShowSignup}
+          />
+        );
+
+        setPostArray((prev) => [mapped, ...prev]);
+      });
+    };
+  }, []);
+
   const handleShowNewPostPopup = () => {
     setShowNewPostPopup(!showNewPostPopup);
   };
 
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        console.log("user logged in: ", user);
+      } else {
+        console.log("user logged out");
+      }
+    });
+
+    return () => unsubscribe;
+  }, []);
+
   return (
-    // <userContext.Provider value={{ user, setUser }}>
-    <AuthProvider>
+    <userContext.Provider value={{ user, setUser }}>
+      {/* <AuthProvider> */}
       <div>
-        <Header />
+        <Header
+          setShowSignup={setShowSignup}
+          setShowLogin={setShowLogin}
+          user={user}
+          setUser={setUser}
+        />
         <Sidebar
           setShowSignup={setShowSignup}
           handleShowNewPostPopup={handleShowNewPostPopup}
@@ -41,7 +104,7 @@ function App() {
           setShowActiveTab={setShowActiveTab}
         />
         <MainPage />
-        <Post
+        {/* <Post
           // karma={555}
           title={"This is a test post"}
           author={"meanbearpig"}
@@ -72,18 +135,21 @@ function App() {
           }
           author={"FunFactsGuy"}
           subclonnit={"c/all"}
-        />
+        /> */}
         {postArray}
         {showSignup && (
           <SignupForm
             setShowSignup={setShowSignup}
             setShowLogin={setShowLogin}
+            user={user}
+            setUser={setUser}
           />
         )}
         {showLogin && (
           <LoginForm
             setShowSignup={setShowSignup}
             setShowLogin={setShowLogin}
+            setUser={setUser}
           />
         )}
         {showNewPostPopup && (
@@ -108,9 +174,8 @@ function App() {
           />
         )}
       </div>
-    </AuthProvider>
-
-    // </userContext.Provider>
+      {/* </AuthProvider> */}
+    </userContext.Provider>
   );
 }
 

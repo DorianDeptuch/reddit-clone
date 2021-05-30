@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
-// import { userContext } from "../context/UserContext";
-import { AuthContext } from "../context/AuthContext";
+import { userContext } from "../context/UserContext";
+// import { AuthContext } from "../context/AuthContext";
 
 function Sidebar({
   setShowSignup,
@@ -8,7 +8,8 @@ function Sidebar({
   showActiveTab,
   setShowActiveTab,
 }) {
-  const { user, setUser } = useContext(AuthContext); //currentUser, setCurrentUser?
+  // const { user, setUser } = useContext(AuthContext); //currentUser, setCurrentUser?
+  const { user, setUser } = useContext(userContext); //currentUser, setCurrentUser?
 
   return (
     <div className="sidebar">
@@ -25,7 +26,7 @@ function Sidebar({
               Submit a new link
             </button>
           ) : (
-            <button onClick={() => setShowSignup(true)}>
+            <button onClick={() => setShowSignup((prev) => !prev)}>
               Submit a new link
             </button>
           )}
@@ -41,7 +42,7 @@ function Sidebar({
               Submit a new text post
             </button>
           ) : (
-            <button onClick={() => setShowSignup(true)}>
+            <button onClick={() => setShowSignup((prev) => !prev)}>
               Submit a new text post
             </button>
           )}
