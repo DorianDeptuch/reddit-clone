@@ -78,6 +78,10 @@
         padding-left: 0.25rem;
 
         .author-info {
+          span {
+            font-weight: bold;
+            color: $blue-font;
+          }
         }
 
         .list-buttons {
@@ -87,6 +91,10 @@
           li {
             padding: 0.25rem;
             font-weight: bold;
+
+            &:hover {
+              cursor: pointer;
+            }
           }
         }
       }
@@ -106,5 +114,38 @@
       border-radius: 5px;
       padding: 1rem 2rem;
     }
+  }
+
+  .hidden {
+    animation: fade-out-disappear 5s;
+    animation-fill-mode: forwards;
+
+    // &:hover {
+    //   opacity: 1 !important;
+    // }
+
+    h2 {
+      color: $gray-icon;
+
+      span {
+        color: $secondary-blue;
+
+        &:hover {
+          cursor: pointer;
+        }
+      }
+    }
+  }
+}
+
+// @include fade-out;
+@keyframes fade-out-disappear {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    display: none;
+    height: 0;
   }
 }

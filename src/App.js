@@ -6,7 +6,9 @@ import MainPage from "./pages/MainPage";
 import SignupForm from "./components/SignupForm";
 import LoginForm from "./components/LoginForm";
 import Post from "./components/Post";
+import ClonnitPremium from "./components/ClonnitPremium";
 import NewPostPopup from "./components/NewPostPopup";
+import AccountDetails from "./components/AccountDetails";
 import { userContext } from "./context/UserContext";
 import { auth, db } from "./firebase";
 import uniqid from "uniqid";
@@ -27,14 +29,13 @@ function App() {
   const [urlSrc, setUrlSrc] = useState("");
   const [textContent, setTextContent] = useState("");
   const [showActiveTab, setShowActiveTab] = useState(true);
+  const [showClonnitPremium, setShowClonnitPremium] = useState(false);
+  const [showAccountDetails, setShowAccountDetails] = useState(false);
 
   useEffect(() => {
-    db.collection("posts")
-      .get()
-      .then((snapshot) => {
-        mapFirestoreData(snapshot.docs);
-        // setPostArray((prev) => [mapFirestoreData, ...prev]);
-      });
+    db.collection("posts").onSnapshot((snapshot) => {
+      mapFirestoreData(snapshot.docs);
+    });
 
     const mapFirestoreData = (data) => {
       data.forEach((doc) => {
@@ -46,12 +47,12 @@ function App() {
           textContent,
           timeStamp,
           dateStamp,
-          titleAnchorURL,
+          titleAnchorUrl,
           urlSrcThumbnail,
         } = doc.data();
-
         const mapped = (
           <Post
+            dataID={doc.id}
             key={uniqid()}
             title={title}
             author={author}
@@ -60,7 +61,7 @@ function App() {
             textContent={textContent}
             timeStamp={timeStamp}
             dateStamp={dateStamp}
-            titleAnchorURL={titleAnchorURL}
+            titleAnchorURL={titleAnchorUrl}
             urlSrcThumbnail={urlSrcThumbnail}
             setShowSignup={setShowSignup}
           />
@@ -75,12 +76,18 @@ function App() {
     setShowNewPostPopup(!showNewPostPopup);
   };
 
+  const handleShowClonnitPremium = () => {
+    setShowClonnitPremium((prev) => !prev);
+  };
+
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         console.log("user logged in: ", user);
+        setUser(user.displayName);
       } else {
         console.log("user logged out");
+        setUser(null);
       }
     });
 
@@ -94,6 +101,7 @@ function App() {
         <Header
           setShowSignup={setShowSignup}
           setShowLogin={setShowLogin}
+          setShowAccountDetails={setShowAccountDetails}
           user={user}
           setUser={setUser}
         />
@@ -102,40 +110,9 @@ function App() {
           handleShowNewPostPopup={handleShowNewPostPopup}
           showActiveTab={showActiveTab}
           setShowActiveTab={setShowActiveTab}
+          handleShowClonnitPremium={handleShowClonnitPremium}
         />
         <MainPage />
-        {/* <Post
-          // karma={555}
-          title={"This is a test post"}
-          author={"meanbearpig"}
-          subclonnit={"c/all"}
-        />
-        <Post
-          // karma={4576}
-          title={"me lol"}
-          author={"cooldude4000"}
-          subclonnit={"c/all"}
-          img={
-            "https://preview.redd.it/ddoemjx1vdz61.jpg?width=625&auto=webp&s=e3197816f5487f7174a0da932a3804a186b4247f"
-          }
-        />
-        <Post
-          // karma={9452}
-          title={"So sad :'("}
-          author={"meanbearpig"}
-          subclonnit={"c/all"}
-          img={
-            "https://preview.redd.it/te8p1gtwdez61.jpg?width=500&auto=webp&s=22342de725e3c428c78afcdac57162584565f171"
-          }
-        />
-        <Post
-          // karma={1037}
-          title={
-            "TIL that in 2006, a woman farted on a plane and tried to cover up the smell by lighting matches, causing an emergency landing and an FBI investigation. Although she was not charged in the incident, she was also not allowed back on the plane."
-          }
-          author={"FunFactsGuy"}
-          subclonnit={"c/all"}
-        /> */}
         {postArray}
         {showSignup && (
           <SignupForm
@@ -172,6 +149,13 @@ function App() {
             setShowActiveTab={setShowActiveTab}
             setShowSignup={setShowSignup}
           />
+        )}
+        {showAccountDetails && (
+          <AccountDetails setShowAccountDetails={setShowAccountDetails} />
+        )}
+
+        {showClonnitPremium && (
+          <ClonnitPremium setShowClonnitPremium={setShowClonnitPremium} />
         )}
       </div>
       {/* </AuthProvider> */}

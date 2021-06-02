@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { userContext } from "../context/UserContext";
 // import { AuthContext } from "../context/AuthContext";
 
@@ -7,6 +7,7 @@ function Sidebar({
   handleShowNewPostPopup,
   showActiveTab,
   setShowActiveTab,
+  handleShowClonnitPremium,
 }) {
   // const { user, setUser } = useContext(AuthContext); //currentUser, setCurrentUser?
   const { user, setUser } = useContext(userContext); //currentUser, setCurrentUser?
@@ -49,7 +50,7 @@ function Sidebar({
         </div>
         <div
           className="clonnit-premium__container"
-          onClick={() => alert("coming soon")}
+          onClick={handleShowClonnitPremium}
         >
           <div>
             <h3>
@@ -62,7 +63,7 @@ function Sidebar({
             <button>Get Clonnit Premium</button>
           </div>
         </div>
-        <div className="arrowBtn">
+        {/* <div className="arrowBtn">
           {user ? (
             <button onClick={() => alert("coming soon")}>
               Create your own subclonnit
@@ -80,7 +81,7 @@ function Sidebar({
               <li></li>
             </ul>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

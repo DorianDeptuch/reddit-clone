@@ -55,7 +55,7 @@ function NewPost({
   const handleFileUpload = (e) => {
     //files under 2MB accepted
     if (e.target.files[0].size > 2097152) {
-      alert("File is too big!");
+      setError("File is too big!");
       e.target.files = [];
     } else {
       const filePath = imgSrcRef.current.files[0].name;
@@ -63,7 +63,16 @@ function NewPost({
       setCurrentFilePath(filePath);
       // console.log(filePath);
       setDisplayPreviewImg(true);
+      handleStorageUpload();
     }
+  };
+
+  const handleStorageUpload = async () => {
+    // //upload img to storage and get back url to then upload to firestore
+    const storageRef = storage.ref();
+    const fileRef = storageRef.child(imgSrcRef.current.files[0].name);
+    await fileRef.put(imgSrcRef.current.files[0]);
+    setUploadedIMG(await fileRef.getDownloadURL());
   };
 
   const handleButtonClick = (e) => {
@@ -99,85 +108,67 @@ function NewPost({
     setTextContent(e.target.value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     let titleValue = titleRef.current.value;
     let imgSrcValue = imgSrcRef.current ?? "";
     let urlSrcValue = urlSrcRef.current ?? "";
     let textContentValue = textContentRef.current ?? "";
-    setTitle(titleValue);
-    setImgSrc(imgSrcValue);
-    setUrlSrc(urlSrcValue);
-    setTextContent(textContentValue);
-    setDisplayPreviewImg(false);
-    setShowNewPostPopup(false);
-    setPlaceHolderArray((prev) => [
-      titleValue,
-      user,
-      imgSrcValue,
-      urlSrcValue,
-      textContentValue,
-    ]);
 
-    const test = [];
-    test.push([titleValue, user, imgSrcValue, urlSrcValue, textContentValue]);
+    if (!titleValue && (!imgSrcValue || !urlSrcValue || !textContentValue)) {
+      setError("You are missing a required field");
+      return;
+    } else {
+      setTitle(titleValue);
+      setImgSrc(imgSrcValue);
+      setUrlSrc(urlSrcValue);
+      setTextContent(textContentValue);
+      setDisplayPreviewImg(false);
+      setShowNewPostPopup(false);
+      setPlaceHolderArray((prev) => [
+        titleValue,
+        user,
+        imgSrcValue,
+        urlSrcValue,
+        textContentValue,
+      ]);
 
-    const storageRef = storage.ref();
-    const fileRef = storageRef.child(currentFile.name);
-    fileRef.put(currentFile).then((file) => {
-      console.log("file uploaded ", file.name);
-    });
+      // const test = [];
+      // test.push([titleValue, user, imgSrcValue, urlSrcValue, textContentValue]);
 
-    // //upload img to storage and get back url to then upload to firestore
-    // // const { url } = useStorage(currentFile)
-    // const storageRef = storage.ref().child(currentFile.name);
+      //upload the post data to firestore
+      handleFirestoreDataUpload(
+        titleValue,
+        user,
+        uploadedIMG,
+        // currentFile,
+        url,
+        textContent,
+        timeStamp,
+        dateStamp,
+        titleAnchorURL,
+        urlThumbnail
+      );
 
-    // storageRef.put(currentFile).on(
-    //   "state_changed",
-    //   // (snap) => {
-    //   //   let percentage = (snap.bytesTransferred / snap.totalBytes) * 100;
-    //   //   setProgress(percentage);
-    //   // },
-    //   (err) => {
-    //     setError(err);
-    //   },
-    //   async () => {
-    //     const url = await storageRef.getDownloadURL();
-    //     setUploadedIMG(url);
-    //   }
-    // );
-
-    //upload the post data to firestore
-    handleFirestoreDataUpload(
-      titleValue,
-      user,
-      uploadedIMG,
-      url,
-      textContent,
-      timeStamp,
-      dateStamp,
-      titleAnchorURL,
-      urlThumbnail
-    );
-
-    //post the same data to the screen
-    const mapped = test.map((item) => (
-      <Post
-        key={uniqid()}
-        title={item[0]}
-        author={item[1]}
-        // imgSrc={uploadedIMG}
-        imgSrc={currentFile}
-        urlSrc={url}
-        textContent={textContent}
-        timeStamp={timeStamp}
-        dateStamp={dateStamp}
-        titleAnchorURL={titleAnchorURL}
-        urlSrcThumbnail={urlThumbnail}
-        setShowSignup={setShowSignup}
-      />
-    ));
-    setPostArray((prev) => [mapped, ...prev]);
+      // //post the same data to the screen
+      // const mapped = test.map((item) => (
+      //   <Post
+      //     key={uniqid()}
+      //     title={item[0]}
+      //     author={item[1]}
+      //     imgSrc={uploadedIMG}
+      //     // imgSrc={currentFile}
+      //     urlSrc={url}
+      //     textContent={textContent}
+      //     timeStamp={timeStamp}
+      //     dateStamp={dateStamp}
+      //     titleAnchorURL={titleAnchorURL}
+      //     urlSrcThumbnail={urlThumbnail}
+      //     setShowSignup={setShowSignup}
+      //   />
+      // ));
+      // setPostArray((prev) => [mapped, ...prev]);
+    }
   };
 
   const handleFirestoreDataUpload = (
@@ -353,6 +344,7 @@ function NewPost({
             <input id="subclonnit" type="text" />
           </div> */}
           <div className="submit__container">
+            <h2 style={{ color: "red" }}>{error}</h2>
             <button>submit</button>
           </div>
         </form>

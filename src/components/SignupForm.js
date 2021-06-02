@@ -36,12 +36,6 @@ function SignupForm({
       setLoading(true);
       await auth
         .createUserWithEmailAndPassword(email, password)
-        // .then((credentials) => {
-        //   console.log(credentials.user);
-        // })
-        // .then((res) => {
-        //   setUser(res.user.displayName);
-        // })
         .then((res) => {
           return auth.currentUser.updateProfile({
             displayName: username,
@@ -50,11 +44,7 @@ function SignupForm({
         .catch(function (error) {
           console.log(error);
         });
-      console.log(auth.currentUser.displayName);
       setUser(auth.currentUser.displayName);
-      // auth.currentUser.updateProfile({
-      //   displayName: username.value,
-      // });
       formRef.current.reset();
       setShowSignup(false);
     } catch {

@@ -4,7 +4,13 @@ import React, { useState, useContext } from "react";
 import { userContext } from "../context/UserContext";
 import { auth } from "../firebase";
 
-function Header({ setShowSignup, setShowLogin, user, setUser }) {
+function Header({
+  setShowSignup,
+  setShowLogin,
+  user,
+  setUser,
+  setShowAccountDetails,
+}) {
   // const { user, setUser } = useContext(AuthContext); //currentUser, setCurrentUser?
   // const { user, setUser } = useContext(userContext); //currentUser, setCurrentUser?
   // const { logout, currentUser } = useAuth();
@@ -23,24 +29,30 @@ function Header({ setShowSignup, setShowLogin, user, setUser }) {
     }
   }
 
+  const handleShowAccountDetails = () => {
+    setShowAccountDetails((prev) => !prev);
+  };
+
   // const currentUser = useContext(AuthContext);
   // const { currentUser } = useAuth();
   return (
     <div className="header">
       <div className="console-account__container">
         <div className="console">
-          <p>MY SUBCLONNITS</p>
+          {/* <p>MY SUBCLONNITS</p>
           <p>HOME</p>
           <p>POPULAR</p>
           <p>ALL</p>
-          <p>RANDOM</p>
+          <p>RANDOM</p> */}
         </div>
         <div className="account">
           {user ? (
             <div className="logged-in__account">
-              <p>{user}</p>
-              <p>(123)</p>
-              <i className="fas fa-cog"></i>
+              <p>
+                <strong>{user}</strong>
+              </p>
+              {/* <p>(123)</p> */}
+              <i className="fas fa-cog" onClick={handleShowAccountDetails}></i>
               <p
                 // onClick={() => {
                 //   setUser(null);

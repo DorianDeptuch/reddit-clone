@@ -1,0 +1,151 @@
+.clonnit-premium {
+  @include popup;
+  background-color: #1c2a37;
+  margin: 2px;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  // transform: translateY(1vh);
+
+  .premium-heading {
+    border: 1px solid white;
+    background-color: #1c2a37;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    h3 {
+      font-weight: bolder;
+      margin: 1rem 0;
+      font-size: 3rem;
+      span {
+        color: $primary-orange;
+      }
+    }
+
+    p {
+      color: white;
+      margin: 0.5rem 0;
+      font-size: 0.75rem;
+      padding: 0 2rem;
+    }
+  }
+
+  .premium-body {
+    color: white;
+    margin: 0.5rem 1rem;
+
+    h4 {
+      text-align: center;
+      font-size: 1.5rem;
+
+      span {
+        text-decoration: line-through;
+      }
+    }
+
+    ul {
+      // list-style-type: circle !important;
+
+      li {
+        // list-style-type: circle !important;
+        padding: 0.5rem 1rem;
+        font-weight: bold;
+
+        span {
+          font-size: 0.75rem;
+          font-weight: normal;
+        }
+
+        &::before {
+          content: "• ";
+        }
+      }
+    }
+  }
+
+  .premium-payment {
+    color: white;
+    display: flex;
+    border: 2px solid white;
+    flex-direction: column;
+    padding: 1rem;
+    margin: 2rem;
+
+    h4 {
+      padding: 0.5rem;
+    }
+
+    .payment-container {
+      display: flex;
+      flex-direction: column;
+
+      label {
+        padding-left: 0.5rem;
+      }
+
+      .payment-item {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .payment-item-hz {
+        display: flex;
+        flex-direction: row;
+        // flex-wrap: wrap;
+
+        div {
+          width: 100%;
+
+          [for="ex"] {
+            flex-grow: 20;
+            width: 100%;
+          }
+          #ex {
+            width: 40%;
+          }
+
+          &:nth-child(2) {
+            display: flex;
+            flex-direction: column;
+          }
+        }
+      }
+
+      input {
+        @include input;
+      }
+      button {
+        @include button;
+        background-color: $primary-orange;
+        width: 50%;
+        align-self: center;
+        margin: 1rem;
+      }
+    }
+
+    .third {
+      width: 30%;
+    }
+  }
+
+  .billing-unavailable {
+    border: red 2px solid;
+    background-color: lighten(red, 30%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 2rem;
+    padding: 4rem;
+    text-align: center;
+
+    h4 {
+      color: darken(red, 30%);
+    }
+  }
+}
