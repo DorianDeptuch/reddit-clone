@@ -33,9 +33,12 @@ function App() {
   const [showAccountDetails, setShowAccountDetails] = useState(false);
 
   useEffect(() => {
-    db.collection("posts").onSnapshot((snapshot) => {
-      mapFirestoreData(snapshot.docs);
-    });
+    db.collection("posts")
+      .get()
+      .then((snapshot) => {
+        //.snapshot instead of .get().then causes a bug where double posts appear
+        mapFirestoreData(snapshot.docs);
+      });
 
     const mapFirestoreData = (data) => {
       data.forEach((doc) => {
@@ -49,6 +52,8 @@ function App() {
           dateStamp,
           titleAnchorUrl,
           urlSrcThumbnail,
+          commentAuthor,
+          commentText,
         } = doc.data();
         const mapped = (
           <Post
@@ -64,6 +69,8 @@ function App() {
             titleAnchorURL={titleAnchorUrl}
             urlSrcThumbnail={urlSrcThumbnail}
             setShowSignup={setShowSignup}
+            commentAuthor={commentAuthor}
+            commentText={commentText}
           />
         );
 

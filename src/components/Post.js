@@ -16,6 +16,8 @@ function Post({
   urlSrcThumbnail,
   setShowSignup,
   dataID,
+  commentAuthor,
+  commentText,
 }) {
   const [showPreview, setShowPreview] = useState(false);
   const [upvoted, setUpvoted] = useState(false);
@@ -28,6 +30,7 @@ function Post({
   const downvoteRef = useRef();
   // const { user, setUser } = useContext(AuthContext); //currentUser, setCurrentUser?
   const { user, setUser } = useContext(userContext); //currentUser, setCurrentUser?
+  const [postID, setPostID] = useState(dataID);
 
   const handleUpvote = () => {
     if (downvoted && !upvoted) {
@@ -159,7 +162,14 @@ function Post({
           )}
         </div>
       ) : null}
-      {showComments && <PostComment dataID={dataID} user={user} />}
+      {showComments && (
+        <PostComment
+          commentAuthor={commentAuthor}
+          commentText={commentText}
+          dataID={dataID}
+          user={user}
+        />
+      )}
       {showSharePost && (
         <PostShare imgSrc={imgSrc} titleAnchorURL={titleAnchorURL} />
       )}

@@ -193,6 +193,8 @@ function NewPost({
         dateStamp,
         titleAnchorUrl,
         urlSrcThumbnail,
+        commentAuthor: "",
+        commentText: "",
       })
       .catch((error) => {
         console.error("Error adding document: ", error);
