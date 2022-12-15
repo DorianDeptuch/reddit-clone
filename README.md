@@ -19,4 +19,5 @@ Odinbook is a Facebook clone built using a MERN stack and modeled after Facebook
 * Create posts with links or YouTube videos
 * Upvote/Downvote posts
 * Add comments
+* Expand or Close posts
 
