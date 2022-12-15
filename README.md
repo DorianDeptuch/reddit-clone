@@ -1,6 +1,6 @@
-# Reddit Clone
+# Clonnit
 
-Odinbook is a Facebook clone built using a MERN stack and modeled after Facebook's UI. Many of the features that are found in Facebook can be found in Odinbook.This project was complted at part of [The Odin Project's Full-Stack Development Course](https://www.theodinproject.com/paths/full-stack-javascript/courses/nodejs)
+Clonnit is a Reddit clone built using React for the front-end and Firebase for the BaaS. This clone is modeled after Reddit's old UI and has several features that can be found it Reddit. This project was complted at part of [The Odin Project's Full-Stack Development Course]([https://www.theodinproject.com/paths/full-stack-javascript/courses/nodejs](https://www.theodinproject.com/paths/full-stack-javascript))
 
 ## Live Preview: [https://doriandeptuch.github.io/reddit-clone/](https://doriandeptuch.github.io/reddit-clone/)
 
